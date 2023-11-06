@@ -25,7 +25,6 @@ public class UserLikedPostService {
     this.postRepository = postRepository;
   }
 
-  // true: none -> like
   public int addOrCancelLikeUser(Long postId, HttpSession session) {
     PostEntity post = postRepository.findById(postId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
@@ -39,5 +38,14 @@ public class UserLikedPostService {
     else post.getLikedUsers().add(user);
     postRepository.save(post);
     return post.getLikedUsers().size();
+  }
+  public int getLikeUserNumber(Long postId) {
+    PostEntity post = postRepository.findById(postId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물을 찾을 수 없습니다."));
+    return post.getLikedUsers().size();
+  }
+  public List<PostEntity> getLikePosts(Long userId) {
+    UserEntity user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+    return user.getLikedPosts();
   }
 }

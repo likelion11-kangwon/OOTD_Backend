@@ -7,7 +7,9 @@ import lombok.Setter;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -40,5 +42,5 @@ public class PostEntity {
 					joinColumns = @JoinColumn(name = "liked_post_id"),
 					inverseJoinColumns = @JoinColumn(name = "liked_user_id")
 	)
-	private List<UserEntity> likedUsers = new ArrayList<>();
+	private Set<UserEntity> likedUsers = new HashSet<>();
 }

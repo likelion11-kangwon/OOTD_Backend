@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Setter
 @Getter
@@ -38,4 +37,16 @@ public class UserEntity {
 
 	@ManyToMany(mappedBy = "likedUsers")
 	private List<PostEntity> likedPosts = new ArrayList<>();
+
+	@Override
+	public int hashCode() {
+		return this.loginId.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (o == null) return false;
+		if (o.getClass() != this.getClass()) return false;
+		return Objects.equals(this.id, ((UserEntity) o).id);
+	}
 }

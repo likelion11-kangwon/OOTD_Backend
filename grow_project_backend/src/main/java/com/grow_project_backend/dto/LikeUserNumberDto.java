@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserLikedPostDto {
+public class LikeUserNumberDto {
   private long postId;
   private int likeUserNumber;
 }
