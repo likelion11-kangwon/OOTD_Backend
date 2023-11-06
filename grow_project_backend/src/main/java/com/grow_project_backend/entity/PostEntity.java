@@ -1,15 +1,13 @@
 package com.grow_project_backend.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,18 +15,30 @@ import lombok.Setter;
 @Entity
 public class PostEntity {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private String category;
+
+	@NonNull
+	private String title;
+
+	private String contents;
+
+	@NonNull
+	private String postImageUrl;
+
+	@OneToMany(mappedBy = "post")
+	private List<CommentEntity> comments = new ArrayList<>();
+
 	@ManyToOne
-    @JoinColumn(name = "userId")
 	private UserEntity user;
-	
-	private String postTitle;
-	
-	private String postContents;
-	
-	private String postCategory;
-	
-	//private String postImageUrl;
+
+	@ManyToMany
+	@JoinTable(
+					name = "user_liked_post",
+					joinColumns = @JoinColumn(name = "liked_post_id"),
+					inverseJoinColumns = @JoinColumn(name = "liked_user_id")
+	)
+	private List<UserEntity> likedUsers = new ArrayList<>();
 }

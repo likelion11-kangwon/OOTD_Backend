@@ -18,7 +18,7 @@ public class UserService {
     private UserRepository userRepository;
     
     public ResponseEntity<?> signUp(SignUpDto signUpDto) {
-        if (userRepository.existsByUserLoginId(signUpDto.getUserLoginId())) {
+        if (userRepository.existsByLoginId(signUpDto.getUserLoginId())) {
             return ResponseEntity.badRequest().body("이미 사용중인 아이디 입니다.");
         }
 
@@ -27,28 +27,28 @@ public class UserService {
         }
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setUserLoginId(signUpDto.getUserLoginId());
-        userEntity.setUserPassword(signUpDto.getUserPassword()); // In real-world, this password should be encoded.
-        userEntity.setUserName(signUpDto.getUserName());
+        userEntity.setLoginId(signUpDto.getUserLoginId());
+        userEntity.setPassword(signUpDto.getUserPassword()); // In real-world, this password should be encoded.
+        userEntity.setName(signUpDto.getUserName());
         userRepository.save(userEntity);
 
         return ResponseEntity.ok(signUpDto);
     }
 
     public ResponseEntity<?> signIn(SignInDto signInDto, HttpSession session) {
-        UserEntity userEntity = userRepository.findByUserLoginId(signInDto.getUserLoginId());
+        UserEntity userEntity = userRepository.findByLoginId(signInDto.getUserLoginId());
         if (userEntity == null) {
             return ResponseEntity.badRequest().body("존재하지 않는 아이디입니다.");
         }
 
-        if (!userEntity.getUserPassword().equals(signInDto.getUserPassword())) {
+        if (!userEntity.getPassword().equals(signInDto.getUserPassword())) {
             return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
         }
         
         session.setAttribute("user", userEntity);
         
         SignInDto loginResponseDto = new SignInDto();
-        loginResponseDto.setUserLoginId(userEntity.getUserLoginId());
+        loginResponseDto.setUserLoginId(userEntity.getLoginId());
 
         return ResponseEntity.ok(loginResponseDto);
     }

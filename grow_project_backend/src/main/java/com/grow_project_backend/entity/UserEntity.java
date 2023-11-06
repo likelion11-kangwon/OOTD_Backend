@@ -1,14 +1,13 @@
 package com.grow_project_backend.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,14 +16,26 @@ import lombok.Setter;
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userId;
+	private Long id;
 
+	@NonNull
 	@Column(unique = true)
-	private String userLoginId;
+	private String loginId;
 
-	private String userPassword;
-	
-	private String userName;
+	@NonNull
+	private String password;
 
-	//private String userProfileImageUrl;
+	@NonNull
+	private String name;
+
+	private String profileImageUrl;
+
+	@OneToMany(mappedBy = "user")
+	private List<CommentEntity> comments = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user")
+	private List<PostEntity> posts = new ArrayList<>();
+
+	@ManyToMany(mappedBy = "likedUsers")
+	private List<PostEntity> likedPosts = new ArrayList<>();
 }
