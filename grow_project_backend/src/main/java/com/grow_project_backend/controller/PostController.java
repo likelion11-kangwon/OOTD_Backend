@@ -1,10 +1,7 @@
 // PostController.java
 package com.grow_project_backend.controller;
 
-import com.grow_project_backend.dto.CreatePostDto;
-import com.grow_project_backend.dto.PostDto;
-import com.grow_project_backend.dto.UpdatePostDto;
-import com.grow_project_backend.dto.LikeUserNumberDto;
+import com.grow_project_backend.dto.*;
 import com.grow_project_backend.service.PostService;
 import com.grow_project_backend.service.UserLikedPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,22 +31,22 @@ public class PostController {
     
     // 특정 번호의 게시글을 읽음
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Long id) {
-    	PostDto post = postService.getPostById(id);
+    public ResponseEntity<PostDto> getPostById(@PathVariable Long id, HttpSession session) {
+    	PostDto post = postService.getPostById(id, session);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     // 모든 게시글을 읽음
     @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> posts = postService.getAllPosts();
+    public ResponseEntity<List<AllPostsDto>> getAllPosts() {
+        List<AllPostsDto> posts = postService.getAllPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
     
     // 특정 번호의 게시글을 수정
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable Long id, @RequestBody UpdatePostDto updatePostDto) {
-    	PostDto updatedPost = postService.updatePost(id, updatePostDto);
+    public ResponseEntity<PostDto> updatePost(@PathVariable Long id, @RequestBody UpdatePostDto updatePostDto, HttpSession session) {
+    	PostDto updatedPost = postService.updatePost(id, updatePostDto, session);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
     

@@ -1,6 +1,7 @@
 // PostService.java
 package com.grow_project_backend.service;
 
+import com.grow_project_backend.dto.AllPostsDto;
 import com.grow_project_backend.dto.CreatePostDto;
 import com.grow_project_backend.dto.PostDto;
 import com.grow_project_backend.dto.UpdatePostDto;
@@ -42,12 +43,18 @@ public class PostService {
             savedPost.getTitle(),
             savedPost.getContents(),
             savedPost.getCategory(),
+            savedPost.getLikedUsers().contains(user),
             savedPost.getPostImageUrl()
         );
     }
     
     // 읽기
-    public PostDto getPostById(Long id) {
+    public PostDto getPostById(Long id, HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시물을 작성할 수 있습니다.");
+        }
+
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
@@ -55,14 +62,15 @@ public class PostService {
             postEntity.getTitle(),
             postEntity.getContents(),
             postEntity.getCategory(),
+            postEntity.getLikedUsers().contains(user),
             postEntity.getPostImageUrl()
         );
     }
     
     // 모두 읽기
-    public List<PostDto> getAllPosts() {
+    public List<AllPostsDto> getAllPosts() {
         List<PostEntity> postEntities = postRepository.findAll();
-        List<PostDto> postDtos = postEntities.stream().map(postEntity -> new PostDto(
+        List<AllPostsDto> postDtos = postEntities.stream().map(postEntity -> new AllPostsDto(
             postEntity.getTitle(),
             postEntity.getContents(),
             postEntity.getCategory(),
@@ -72,7 +80,11 @@ public class PostService {
     }
     
     // 수정
-    public PostDto updatePost(Long id, UpdatePostDto updatePostDto) {
+    public PostDto updatePost(Long id, UpdatePostDto updatePostDto, HttpSession session) {
+        UserEntity user = (UserEntity) session.getAttribute("user");
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시물을 작성할 수 있습니다.");
+        }
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
@@ -86,6 +98,7 @@ public class PostService {
             updatedPost.getTitle(),
             updatedPost.getContents(),
             updatedPost.getCategory(),
+            updatedPost.getLikedUsers().contains(user),
             updatedPost.getPostImageUrl()
         );
     }

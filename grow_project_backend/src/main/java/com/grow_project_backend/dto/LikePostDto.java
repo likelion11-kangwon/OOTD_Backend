@@ -10,4 +10,5 @@ import lombok.*;
 public class LikePostDto {
   private Long postId;
   private String title;
+  private String postImage;
 }
