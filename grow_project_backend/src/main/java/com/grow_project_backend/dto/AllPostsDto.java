@@ -14,4 +14,5 @@ public class AllPostsDto {
   private String postTitle;
   private String postContents;
   private String postCategory;
+  private String postImageUrl;
 }
