@@ -38,7 +38,7 @@ public class CommentService {
         CommentEntity comment = new CommentEntity();
         comment.setPost(post);
         comment.setUser(user);
-        comment.setCommentContents(content);
+        comment.setContents(content);
         
         return commentRepository.save(comment);
     }
@@ -50,7 +50,7 @@ public class CommentService {
         List<CommentEntity> comments = commentRepository.findByPost(post); // postId 대신 post 엔티티 사용
 
         return comments.stream()
-        	    .map(comment -> new CommentDto(comment.getCommentContents()))
+        	    .map(comment -> new CommentDto(comment.getContents()))
         	    .collect(Collectors.toList());
     }
 }

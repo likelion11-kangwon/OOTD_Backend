@@ -10,24 +10,24 @@ import javax.persistence.Table;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
 @Setter
 @Getter
 @Table(name = "Comment")
 @Entity
 public class CommentEntity {
-	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
-	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	@NonNull
+	private String contents;
+
 	@ManyToOne
-    @JoinColumn(name = "userId")
-	private UserEntity user;
-	
-	@ManyToOne
-    @JoinColumn(name = "postId")
 	private PostEntity post;
-	
-	private String commentContents;
+
+	@ManyToOne
+	private UserEntity user;
+
 }

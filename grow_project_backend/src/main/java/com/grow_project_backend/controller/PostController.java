@@ -4,7 +4,9 @@ package com.grow_project_backend.controller;
 import com.grow_project_backend.dto.CreatePostDto;
 import com.grow_project_backend.dto.PostDto;
 import com.grow_project_backend.dto.UpdatePostDto;
+import com.grow_project_backend.dto.LikeUserNumberDto;
 import com.grow_project_backend.service.PostService;
+import com.grow_project_backend.service.UserLikedPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,9 @@ public class PostController {
 	
 	@Autowired
     private PostService postService;
-    
+  @Autowired
+  private UserLikedPostService userLikedPostService;
+
     // 게시글 작성
     @PostMapping
     public ResponseEntity<PostDto> createPost(@RequestBody CreatePostDto createRequest, HttpSession session) {
@@ -34,7 +38,7 @@ public class PostController {
     	PostDto post = postService.getPostById(id);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
-    
+
     // 모든 게시글을 읽음
     @GetMapping
     public ResponseEntity<List<PostDto>> getAllPosts() {
@@ -55,4 +59,5 @@ public class PostController {
         postService.deletePost(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }

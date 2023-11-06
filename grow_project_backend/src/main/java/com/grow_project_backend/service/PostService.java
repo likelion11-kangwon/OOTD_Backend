@@ -32,16 +32,16 @@ public class PostService {
 
         PostEntity postEntity = new PostEntity();
         postEntity.setUser(user);
-        postEntity.setPostTitle(createPostDto.getPostTitle());
-        postEntity.setPostContents(createPostDto.getPostContents());
-        postEntity.setPostCategory(createPostDto.getPostCategory());
+        postEntity.setTitle(createPostDto.getPostTitle());
+        postEntity.setContents(createPostDto.getPostContents());
+        postEntity.setCategory(createPostDto.getPostCategory());
         
         PostEntity savedPost = postRepository.save(postEntity);
 
         return new PostDto(
-            savedPost.getPostTitle(),
-            savedPost.getPostContents(),
-            savedPost.getPostCategory()
+            savedPost.getTitle(),
+            savedPost.getContents(),
+            savedPost.getCategory()
         );
     }
     
@@ -51,9 +51,9 @@ public class PostService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
         return new PostDto(
-            postEntity.getPostTitle(),
-            postEntity.getPostContents(),
-            postEntity.getPostCategory()
+            postEntity.getTitle(),
+            postEntity.getContents(),
+            postEntity.getCategory()
         );
     }
     
@@ -61,9 +61,9 @@ public class PostService {
     public List<PostDto> getAllPosts() {
         List<PostEntity> postEntities = postRepository.findAll();
         List<PostDto> postDtos = postEntities.stream().map(postEntity -> new PostDto(
-            postEntity.getPostTitle(),
-            postEntity.getPostContents(),
-            postEntity.getPostCategory())
+            postEntity.getTitle(),
+            postEntity.getContents(),
+            postEntity.getCategory())
         ).collect(Collectors.toList());
         return postDtos;
     }
@@ -73,16 +73,16 @@ public class PostService {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
-        postEntity.setPostTitle(updatePostDto.getPostTitle());
-        postEntity.setPostContents(updatePostDto.getPostContents());
-        postEntity.setPostCategory(updatePostDto.getPostCategory());
+        postEntity.setTitle(updatePostDto.getPostTitle());
+        postEntity.setContents(updatePostDto.getPostContents());
+        postEntity.setCategory(updatePostDto.getPostCategory());
         
         PostEntity updatedPost = postRepository.save(postEntity);
 
         return new PostDto(
-            updatedPost.getPostTitle(),
-            updatedPost.getPostContents(),
-            updatedPost.getPostCategory()
+            updatedPost.getTitle(),
+            updatedPost.getContents(),
+            updatedPost.getCategory()
         );
     }
     

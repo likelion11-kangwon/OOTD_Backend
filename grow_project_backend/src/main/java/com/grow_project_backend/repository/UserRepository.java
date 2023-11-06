@@ -8,7 +8,7 @@ import com.grow_project_backend.entity.UserEntity;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long>{
 	
-	UserEntity findByUserLoginId(String userLoginId);
+	UserEntity findByLoginId(String userLoginId);
 
-	public boolean existsByUserLoginId(String userLoginId);
+	public boolean existsByLoginId(String userLoginId);
 }
