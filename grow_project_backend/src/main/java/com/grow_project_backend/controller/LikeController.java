@@ -51,7 +51,7 @@ public class LikeController {
     List<LikePostDto> lp = new ArrayList<>(posts.size());
     while(it.hasNext()) {
       PostEntity pe = it.next();
-      lp.add(LikePostDto.builder().title(pe.getTitle()).postId(pe.getId()).build());
+      lp.add(LikePostDto.builder().postImage(pe.getPostImageUrl()).title(pe.getTitle()).postId(pe.getId()).build());
     }
     result.setData(lp);
     result.setUserId(userId);
