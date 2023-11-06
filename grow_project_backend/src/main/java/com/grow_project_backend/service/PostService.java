@@ -43,7 +43,8 @@ public class PostService {
             savedPost.getTitle(),
             savedPost.getContents(),
             savedPost.getCategory(),
-            savedPost.getLikedUsers().contains(user)
+            savedPost.getLikedUsers().contains(user),
+            savedPost.getPostImageUrl()
         );
     }
     
@@ -61,7 +62,8 @@ public class PostService {
             postEntity.getTitle(),
             postEntity.getContents(),
             postEntity.getCategory(),
-            postEntity.getLikedUsers().contains(user)
+            postEntity.getLikedUsers().contains(user),
+            postEntity.getPostImageUrl()
         );
     }
     
@@ -71,7 +73,8 @@ public class PostService {
         List<AllPostsDto> postDtos = postEntities.stream().map(postEntity -> new AllPostsDto(
             postEntity.getTitle(),
             postEntity.getContents(),
-            postEntity.getCategory())
+            postEntity.getCategory(),
+        	postEntity.getPostImageUrl())
         ).collect(Collectors.toList());
         return postDtos;
     }
@@ -95,7 +98,8 @@ public class PostService {
             updatedPost.getTitle(),
             updatedPost.getContents(),
             updatedPost.getCategory(),
-            updatedPost.getLikedUsers().contains(user)
+            updatedPost.getLikedUsers().contains(user),
+            updatedPost.getPostImageUrl()
         );
     }
     

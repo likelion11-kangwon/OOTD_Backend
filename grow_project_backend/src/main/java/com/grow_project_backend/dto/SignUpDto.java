@@ -14,5 +14,4 @@ public class SignUpDto {
 	private String userPassword;
 	private String userPasswordCheck;
 	private String userName;
-	//private String userProfileImageUrl;
 }

@@ -19,8 +19,8 @@ public class PostController {
 	
 	@Autowired
     private PostService postService;
-  @Autowired
-  private UserLikedPostService userLikedPostService;
+	@Autowired
+	private UserLikedPostService userLikedPostService;
 
     // 게시글 작성
     @PostMapping
