@@ -13,4 +13,5 @@ public class PostDto {
 	private String postTitle;
     private String postContents;
     private String postCategory;
+    private String postImageUrl;
 }

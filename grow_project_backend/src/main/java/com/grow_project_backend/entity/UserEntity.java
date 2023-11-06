@@ -27,8 +27,6 @@ public class UserEntity {
 	@NonNull
 	private String name;
 
-	private String profileImageUrl;
-
 	@OneToMany(mappedBy = "user")
 	private List<CommentEntity> comments = new ArrayList<>();
 

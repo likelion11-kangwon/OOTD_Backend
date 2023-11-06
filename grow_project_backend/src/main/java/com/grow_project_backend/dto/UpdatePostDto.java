@@ -13,4 +13,5 @@ public class UpdatePostDto {
 	private String postTitle;
 	private String postContents;
 	private String postCategory;
+	private String postImageUrl;
 }
