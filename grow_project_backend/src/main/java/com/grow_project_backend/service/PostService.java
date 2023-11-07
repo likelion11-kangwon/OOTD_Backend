@@ -36,6 +36,7 @@ public class PostService {
         postEntity.setTitle(createPostDto.getPostTitle());
         postEntity.setContents(createPostDto.getPostContents());
         postEntity.setCategory(createPostDto.getPostCategory());
+        postEntity.setPostImageUrl(createPostDto.getPostImageUrl());
         
         PostEntity savedPost = postRepository.save(postEntity);
 

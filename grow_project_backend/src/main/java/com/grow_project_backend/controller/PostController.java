@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -34,6 +34,25 @@ public class PostController {
     public ResponseEntity<PostDto> getPostById(@PathVariable Long id, HttpSession session) {
     	PostDto post = postService.getPostById(id, session);
         return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
+    @GetMapping("list")
+    public ResponseEntity<PageDto> getPostList() {
+        List<AllPostsDto> allPosts = postService.getAllPosts();
+        Iterator<AllPostsDto> it = allPosts.iterator();
+        int i = 0;
+        List<PostSimpleDto> postSimpleDtoList = new ArrayList<>(4);
+        List<PostsDto> postsDtos = new LinkedList<>();
+        while(it.hasNext()) {
+            AllPostsDto post = it.next();
+            postSimpleDtoList.add(new PostSimpleDto(post.getPostId(), post.getPostTitle(), post.getPostImageUrl()));
+            i = (i+1) % 4;
+            if (i == 0 || !it.hasNext()) {
+                postsDtos.add(new PostsDto(postSimpleDtoList.toArray(new PostSimpleDto[4])));
+                postSimpleDtoList = new ArrayList<>(4);
+            }
+        }
+        return new ResponseEntity<>(new PageDto(postsDtos.toArray(new PostsDto[0])), HttpStatus.OK);
     }
 
     // 모든 게시글을 읽음
