@@ -3,6 +3,7 @@ package com.grow_project_backend.controller;
 
 import com.grow_project_backend.dto.*;
 import com.grow_project_backend.service.PostService;
+import com.grow_project_backend.service.SearchService;
 import com.grow_project_backend.service.UserLikedPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,8 @@ public class PostController {
     private PostService postService;
 	@Autowired
 	private UserLikedPostService userLikedPostService;
+  @Autowired
+  private SearchService searchService;
 
     // 게시글 작성
     @PostMapping
@@ -88,4 +91,10 @@ public class PostController {
         return new ResponseEntity<>(postLikeDto, HttpStatus.OK);
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<PostSimple>> searchPost(@RequestBody RequestSearchDto searchDto) {
+        List<PostSimple> result = searchService.getSearchPostList(searchDto.getKeyword());
+        return new ResponseEntity<>(result, HttpStatus.OK);
+
+    }
 }
