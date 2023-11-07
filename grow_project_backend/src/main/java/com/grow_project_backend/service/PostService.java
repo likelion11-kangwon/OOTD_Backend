@@ -3,10 +3,11 @@ package com.grow_project_backend.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.grow_project_backend.dto.AllPostsDto;
-import com.grow_project_backend.dto.CreatePostDto;
-import com.grow_project_backend.dto.PostDto;
-import com.grow_project_backend.dto.UpdatePostDto;
+import com.grow_project_backend.dto.CommentDto;
+import com.grow_project_backend.dto.PostSimple;
+import com.grow_project_backend.dto.PostUploadDto;
+import com.grow_project_backend.dto.PostDetailDto;
+import com.grow_project_backend.entity.CommentEntity;
 import com.grow_project_backend.entity.PostEntity;
 import com.grow_project_backend.entity.UserEntity;
 import com.grow_project_backend.repository.PostRepository;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +37,9 @@ public class PostService {
 	
 	@Value("${application.bucket.name}")
     private String bucketName;
-
-	// 생성
-    public PostDto createPost(CreatePostDto createPostDto, HttpSession session, MultipartFile file) {
+    
+    // 생성
+    public PostDetailDto createPost(PostUploadDto createPostDto, HttpSession session, MultipartFile file) {
         UserEntity user = (UserEntity) session.getAttribute("user");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시물을 작성할 수 있습니다.");
@@ -44,9 +47,9 @@ public class PostService {
 
         PostEntity postEntity = new PostEntity();
         postEntity.setUser(user);
-        postEntity.setTitle(createPostDto.getPostTitle());
-        postEntity.setContents(createPostDto.getPostContents());
-        postEntity.setCategory(createPostDto.getPostCategory());
+        postEntity.setTitle(createPostDto.getTitle());
+        postEntity.setContents(createPostDto.getContents());
+        postEntity.setCategory(createPostDto.getCategory());
         
         try {
             String fileName = file.getOriginalFilename();
@@ -62,18 +65,21 @@ public class PostService {
         
         PostEntity savedPost = postRepository.save(postEntity);
 
-        return new PostDto(
-            savedPost.getId(),
-            savedPost.getTitle(),
-            savedPost.getContents(),
-            savedPost.getCategory(),
-            savedPost.getLikedUsers().contains(user),
-            savedPost.getPostImageUrl()
+        List<CommentDto> commentDtoList = new ArrayList<>();
+        Iterator<CommentEntity> commentIterator = savedPost.getComments().iterator();
+
+        while(commentIterator.hasNext()) {
+            CommentEntity comment = commentIterator.next();
+            commentDtoList.add(new CommentDto(comment.getUser().getName(), comment.getContents()));
+        }
+
+        return new PostDetailDto(savedPost.getId(), user.getName(), savedPost.getCategory(), savedPost.getTitle(),
+                savedPost.getContents(), savedPost.getPostImageUrl(), commentDtoList, savedPost.getLikedUsers().size(), savedPost.getLikedUsers().contains(user)
         );
     }
     
     // 읽기
-    public PostDto getPostById(Long id, HttpSession session) {
+    public PostDetailDto getPostById(Long id, HttpSession session) {
         UserEntity user = (UserEntity) session.getAttribute("user");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시물을 작성할 수 있습니다.");
@@ -82,31 +88,34 @@ public class PostService {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
-        return new PostDto(
-            postEntity.getId(),
-            postEntity.getTitle(),
-            postEntity.getContents(),
-            postEntity.getCategory(),
-            postEntity.getLikedUsers().contains(user),
-            postEntity.getPostImageUrl()
+        List<CommentDto> commentDtoList = new ArrayList<>();
+        Iterator<CommentEntity> commentIterator = postEntity.getComments().iterator();
+
+        while(commentIterator.hasNext()) {
+            CommentEntity comment = commentIterator.next();
+            commentDtoList.add(new CommentDto(comment.getUser().getName(), comment.getContents()));
+        }
+
+        return new PostDetailDto(postEntity.getId(), user.getName(), postEntity.getCategory(), postEntity.getTitle(),
+                postEntity.getContents(), postEntity.getPostImageUrl(), commentDtoList, postEntity.getLikedUsers().size(), postEntity.getLikedUsers().contains(user)
         );
     }
     
     // 모두 읽기
-    public List<AllPostsDto> getAllPosts() {
+    public List<PostSimple> getAllPosts() {
         List<PostEntity> postEntities = postRepository.findAll();
-        List<AllPostsDto> postDtos = postEntities.stream().map(postEntity -> new AllPostsDto(
+        List<PostSimple> postDtos = postEntities.stream().map(postEntity -> new PostSimple(
             postEntity.getId(),
+            postEntity.getCategory(),
             postEntity.getTitle(),
             postEntity.getContents(),
-            postEntity.getCategory(),
         	postEntity.getPostImageUrl())
         ).collect(Collectors.toList());
         return postDtos;
     }
     
     // 수정
-    public PostDto updatePost(Long id, UpdatePostDto updatePostDto, HttpSession session, MultipartFile file) {
+    public PostDetailDto updatePost(Long id, PostUploadDto updatePostDto, HttpSession session, MultipartFile file) {
         UserEntity user = (UserEntity) session.getAttribute("user");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시물을 작성할 수 있습니다.");
@@ -114,9 +123,9 @@ public class PostService {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
-        postEntity.setTitle(updatePostDto.getPostTitle());
-        postEntity.setContents(updatePostDto.getPostContents());
-        postEntity.setCategory(updatePostDto.getPostCategory());
+        postEntity.setTitle(updatePostDto.getTitle());
+        postEntity.setContents(updatePostDto.getContents());
+        postEntity.setCategory(updatePostDto.getCategory());
 
         try {
             String fileName = file.getOriginalFilename();
@@ -130,15 +139,17 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 중 오류가 발생했습니다.");
         }
         
-        PostEntity savedPost = postRepository.save(postEntity);
+        PostEntity updatedPost = postRepository.save(postEntity);
 
-        return new PostDto(
-            savedPost.getId(),
-            savedPost.getTitle(),
-            savedPost.getContents(),
-            savedPost.getCategory(),
-            savedPost.getLikedUsers().contains(user),
-            savedPost.getPostImageUrl()
+        List<CommentDto> commentDtoList = new ArrayList<>();
+        Iterator<CommentEntity> commentIterator = postEntity.getComments().iterator();
+
+        while(commentIterator.hasNext()) {
+            CommentEntity comment = commentIterator.next();
+            commentDtoList.add(new CommentDto(comment.getUser().getName(), comment.getContents()));
+        }
+        return new PostDetailDto(postEntity.getId(), user.getName(), postEntity.getCategory(), postEntity.getTitle(),
+                postEntity.getContents(), postEntity.getPostImageUrl(), commentDtoList, postEntity.getLikedUsers().size(), postEntity.getLikedUsers().contains(user)
         );
     }
     
