@@ -37,22 +37,22 @@ public class PostController {
     }
 
     @GetMapping("list")
-    public ResponseEntity<PageDto> getPostList() {
+    public ResponseEntity<PostSimpleDto[][]> getPostList() {
         List<AllPostsDto> allPosts = postService.getAllPosts();
         Iterator<AllPostsDto> it = allPosts.iterator();
         int i = 0;
         List<PostSimpleDto> postSimpleDtoList = new ArrayList<>(4);
-        List<PostsDto> postsDtos = new LinkedList<>();
+        List<PostSimpleDto[]> postsDtos = new LinkedList<>();
         while(it.hasNext()) {
             AllPostsDto post = it.next();
             postSimpleDtoList.add(new PostSimpleDto(post.getPostId(), post.getPostTitle(), post.getPostImageUrl()));
             i = (i+1) % 4;
             if (i == 0 || !it.hasNext()) {
-                postsDtos.add(new PostsDto(postSimpleDtoList.toArray(new PostSimpleDto[4])));
+                postsDtos.add(postSimpleDtoList.toArray(new PostSimpleDto[4]));
                 postSimpleDtoList = new ArrayList<>(4);
             }
         }
-        return new ResponseEntity<>(new PageDto(postsDtos.toArray(new PostsDto[0])), HttpStatus.OK);
+        return new ResponseEntity<>(postsDtos.toArray(new PostSimpleDto[0][0]), HttpStatus.OK);
     }
 
     // 모든 게시글을 읽음
