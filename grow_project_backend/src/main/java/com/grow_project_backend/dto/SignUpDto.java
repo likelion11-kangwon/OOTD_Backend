@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDto {
-	private String commentContents;
+public class SignUpDto {
+	private String userLoginId;
+	private String userPassword;
+	private String userPasswordCheck;
+	private String userName;
 }
