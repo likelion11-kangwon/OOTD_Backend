@@ -5,12 +5,13 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import com.grow_project_backend.dto.CommentDto;
+import com.grow_project_backend.dto.ResponseCreateCommentDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.grow_project_backend.dto.CommentDto;
 import com.grow_project_backend.entity.CommentEntity;
 import com.grow_project_backend.entity.PostEntity;
 import com.grow_project_backend.entity.UserEntity;
@@ -26,7 +27,7 @@ public class CommentService {
     @Autowired
     private PostRepository postRepository;
 
-    public CommentEntity addComment(Long postId, String content, HttpSession session) {
+    public ResponseCreateCommentDto addComment(Long postId, String content, HttpSession session) {
         UserEntity user = (UserEntity) session.getAttribute("user");
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인을 해야 댓글을 작성할 수 있습니다.");
@@ -40,7 +41,9 @@ public class CommentService {
         comment.setUser(user);
         comment.setContents(content);
         
-        return commentRepository.save(comment);
+        CommentEntity savedComment = commentRepository.save(comment);
+
+        return new ResponseCreateCommentDto(new CommentDto(savedComment.getUser().getName(), savedComment.getContents()));
     }
     
     public List<CommentDto> getCommentsByPostId(Long postId) {
@@ -50,7 +53,7 @@ public class CommentService {
         List<CommentEntity> comments = commentRepository.findByPost(post); // postId 대신 post 엔티티 사용
 
         return comments.stream()
-        	    .map(comment -> new CommentDto(comment.getContents()))
+        	    .map(comment -> new CommentDto(comment.getUser().getName(), comment.getContents()))
         	    .collect(Collectors.toList());
     }
 }

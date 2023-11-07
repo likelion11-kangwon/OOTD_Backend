@@ -24,48 +24,42 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody CreatePostDto createRequest, HttpSession session) {
-    	PostDto newPost = postService.createPost(createRequest, session);
+    public ResponseEntity<PostDetailDto> createPost(@RequestBody PostUploadDto createRequest, HttpSession session) {
+    	PostDetailDto newPost = postService.createPost(createRequest, "http://imageUrl", session);
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
     }
     
     // 특정 번호의 게시글을 읽음
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable Long id, HttpSession session) {
-    	PostDto post = postService.getPostById(id, session);
+    public ResponseEntity<PostDetailDto> getPostById(@PathVariable Long id, HttpSession session) {
+    	PostDetailDto post = postService.getPostById(id, session);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
-    @GetMapping("list")
-    public ResponseEntity<PostSimpleDto[][]> getPostList() {
-        List<AllPostsDto> allPosts = postService.getAllPosts();
-        Iterator<AllPostsDto> it = allPosts.iterator();
+    @GetMapping("/pages")
+    public ResponseEntity<PostPagesDto> getPostList() {
+        List<PostSimple> allPosts = postService.getAllPosts();
+        Iterator<PostSimple> it = allPosts.iterator();
         int i = 0;
-        List<PostSimpleDto> postSimpleDtoList = new ArrayList<>(4);
-        List<PostSimpleDto[]> postsDtos = new LinkedList<>();
+        List<PostSimple> postSimpleDtoList = new ArrayList<>(4);
+        List<PostSimple[]> postsDtos = new LinkedList<>();
         while(it.hasNext()) {
-            AllPostsDto post = it.next();
-            postSimpleDtoList.add(new PostSimpleDto(post.getPostId(), post.getPostTitle(), post.getPostImageUrl()));
+            PostSimple post = it.next();
+            postSimpleDtoList.add(post);
             i = (i+1) % 4;
             if (i == 0 || !it.hasNext()) {
-                postsDtos.add(postSimpleDtoList.toArray(new PostSimpleDto[4]));
+                postsDtos.add(postSimpleDtoList.toArray(new PostSimple[4]));
                 postSimpleDtoList = new ArrayList<>(4);
             }
         }
-        return new ResponseEntity<>(postsDtos.toArray(new PostSimpleDto[0][0]), HttpStatus.OK);
+        return new ResponseEntity<>(new PostPagesDto(postsDtos), HttpStatus.OK);
     }
 
-    // 모든 게시글을 읽음
-    @GetMapping
-    public ResponseEntity<List<AllPostsDto>> getAllPosts() {
-        List<AllPostsDto> posts = postService.getAllPosts();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
-    }
-    
+
     // 특정 번호의 게시글을 수정
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable Long id, @RequestBody UpdatePostDto updatePostDto, HttpSession session) {
-    	PostDto updatedPost = postService.updatePost(id, updatePostDto, session);
+    public ResponseEntity<PostDetailDto> updatePost(@PathVariable Long id, @RequestBody PostUploadDto updatePostDto, HttpSession session) {
+    	PostDetailDto updatedPost = postService.updatePost(id, updatePostDto, "http://imageUrl", session);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
     
@@ -74,6 +68,16 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/{id}/like")
+    public ResponseEntity<PostLikeDto> getLikedInformation(@PathVariable Long id, HttpSession session) {
+        return new ResponseEntity<>(userLikedPostService.getLikedInformation(id, session), HttpStatus.OK);
+    }
+    @PutMapping("/{id}/like")
+    public ResponseEntity<PostLikeDto> updateLike(@PathVariable Long id, HttpSession session) {
+        PostLikeDto postLikeDto = userLikedPostService.addOrCancelLikeUser(id, session);
+        return new ResponseEntity<>(postLikeDto, HttpStatus.OK);
     }
 
 }
