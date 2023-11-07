@@ -4,6 +4,13 @@ server:
   
  # database 연동 설정
 spring:
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+        
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 #    각자 PC에 만들어놓은 Database이름을 써야 합니다.
@@ -32,3 +39,18 @@ spring:
     #show-sql: true
     #hibernate:
       #ddl-auto: update
+      
+      
+cloud:
+  aws:
+    credentials:
+      access-key: 
+      secret-key: 
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: gpb-bucket
