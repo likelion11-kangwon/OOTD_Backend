@@ -11,6 +11,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class AllPostsDto {
+  private Long postId;
   private String postTitle;
   private String postContents;
   private String postCategory;
