@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class PostDto {
+  private Long postId;
 	private String postTitle;
   private String postContents;
   private String postCategory;

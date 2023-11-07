@@ -40,6 +40,7 @@ public class PostService {
         PostEntity savedPost = postRepository.save(postEntity);
 
         return new PostDto(
+            savedPost.getId(),
             savedPost.getTitle(),
             savedPost.getContents(),
             savedPost.getCategory(),
@@ -59,6 +60,7 @@ public class PostService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
 
         return new PostDto(
+            postEntity.getId(),
             postEntity.getTitle(),
             postEntity.getContents(),
             postEntity.getCategory(),
@@ -71,6 +73,7 @@ public class PostService {
     public List<AllPostsDto> getAllPosts() {
         List<PostEntity> postEntities = postRepository.findAll();
         List<AllPostsDto> postDtos = postEntities.stream().map(postEntity -> new AllPostsDto(
+            postEntity.getId(),
             postEntity.getTitle(),
             postEntity.getContents(),
             postEntity.getCategory(),
@@ -95,6 +98,7 @@ public class PostService {
         PostEntity updatedPost = postRepository.save(postEntity);
 
         return new PostDto(
+            updatedPost.getId(),
             updatedPost.getTitle(),
             updatedPost.getContents(),
             updatedPost.getCategory(),
@@ -107,7 +111,6 @@ public class PostService {
     public void deletePost(Long id) {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "게시물이 존재하지 않습니다."));
-
         postRepository.delete(postEntity);
     }
 }
