@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(originPatterns="http://localhost:3000")
+@CrossOrigin(originPatterns="http://localhost:3000", allowCredentials = "true")
 public class UserController {
   private final UserLikedPostService userLikedPostService;
   private final UserService userService;
@@ -37,7 +37,7 @@ public class UserController {
     return new ResponseEntity<>(post, HttpStatus.OK);
   }
 
-  @GetMapping("/mypage")
+  @PostMapping("/mypage")
   public ResponseEntity<ResponseMyPageDto> getMyInformation(HttpSession session) {
     ResponseMyPageDto result = userService.getMyPageData(session);
     return new ResponseEntity<>(result, HttpStatus.OK);
