@@ -126,20 +126,23 @@ public class PostService {
         postEntity.setTitle(updatePostDto.getTitle());
         postEntity.setContents(updatePostDto.getContents());
         postEntity.setCategory(updatePostDto.getCategory());
-
-        try {
-            String fileName = file.getOriginalFilename();
-            String fileUrl = "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
-            metadata.setContentLength(file.getSize());
-            s3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
-            postEntity.setPostImageUrl(fileUrl);
-        } catch(IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 중 오류가 발생했습니다.");
+        
+        // 새로운 이미지로 수정되었을 때
+        if (file != null) {
+            try {
+                String fileName = file.getOriginalFilename();
+                String fileUrl = "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentType(file.getContentType());
+                metadata.setContentLength(file.getSize());
+                s3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+                postEntity.setPostImageUrl(fileUrl);
+            } catch(IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드 중 오류가 발생했습니다.");
+            }
         }
         
-        PostEntity updatedPost = postRepository.save(postEntity);
+        postRepository.save(postEntity);
 
         List<CommentDto> commentDtoList = new ArrayList<>();
         Iterator<CommentEntity> commentIterator = postEntity.getComments().iterator();

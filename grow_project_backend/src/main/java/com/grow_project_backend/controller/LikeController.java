@@ -1,20 +1,18 @@
 package com.grow_project_backend.controller;
 
-import com.grow_project_backend.dto.LikePostDto;
-import com.grow_project_backend.dto.LikePostListDto;
 import com.grow_project_backend.dto.LikeUserNumberDto;
-import com.grow_project_backend.entity.PostEntity;
+import com.grow_project_backend.dto.PostLikeDto;
+import com.grow_project_backend.dto.ResponseLikedPostListDto;
+import com.grow_project_backend.entity.UserEntity;
 import com.grow_project_backend.repository.UserRepository;
 import com.grow_project_backend.service.UserLikedPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/like")
@@ -29,12 +27,9 @@ public class LikeController {
   }
 
   @GetMapping("/update/{postId}")
-  public ResponseEntity<LikeUserNumberDto> addOrCancelLike(@PathVariable Long postId, HttpSession session) {
-    int likeUserNumber = userLikedPostService.addOrCancelLikeUser(postId, session);
-    LikeUserNumberDto result = new LikeUserNumberDto();
-    result.setPostId(postId);
-    result.setLikeUserNumber(likeUserNumber);
-    return new ResponseEntity<>(result, HttpStatus.OK);
+  public ResponseEntity<PostLikeDto> addOrCancelLike(@PathVariable Long postId, HttpSession session) {
+      PostLikeDto result = userLikedPostService.addOrCancelLikeUser(postId, session);
+      return new ResponseEntity<>(result, HttpStatus.OK);
   }
   @GetMapping("/post/{postId}")
   public ResponseEntity<LikeUserNumberDto> getPostLikedUserNumber(@PathVariable Long postId) {
@@ -44,17 +39,12 @@ public class LikeController {
     return new ResponseEntity<>(result, HttpStatus.OK);
   }
   @GetMapping("/user/{userId}")
-  public ResponseEntity<LikePostListDto> getUserLikedPosts(@PathVariable Long userId) {
-    LikePostListDto result = new LikePostListDto();
-    List<PostEntity> posts = userLikedPostService.getLikePosts(userId);
-    Iterator<PostEntity> it = posts.iterator();
-    List<LikePostDto> lp = new ArrayList<>(posts.size());
-    while(it.hasNext()) {
-      PostEntity pe = it.next();
-      lp.add(LikePostDto.builder().postImage(pe.getPostImageUrl()).title(pe.getTitle()).postId(pe.getId()).build());
-    }
-    result.setData(lp);
-    result.setUserId(userId);
-    return new ResponseEntity<>(result, HttpStatus.OK);
+  public ResponseEntity<ResponseLikedPostListDto> getUserLikedPosts(@PathVariable Long userId, HttpSession session) {
+      UserEntity user = userRepository.findById(userId)
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+      session.setAttribute("user", user);
+
+      ResponseLikedPostListDto result = userLikedPostService.getLikePosts(session);
+      return new ResponseEntity<>(result, HttpStatus.OK);
   }
 }

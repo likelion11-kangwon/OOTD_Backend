@@ -1,6 +1,5 @@
 package com.grow_project_backend.dto;
 
-import com.grow_project_backend.entity.PostEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

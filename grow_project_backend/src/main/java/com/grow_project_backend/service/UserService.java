@@ -6,7 +6,6 @@ import com.grow_project_backend.dto.RequestLoginDto;
 import com.grow_project_backend.dto.RequestRegisterDto;
 import com.grow_project_backend.dto.ResponseLoginDto;
 import com.grow_project_backend.dto.ResponseRegisterDto;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class UserService {
         }
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setLoginId(signUpDto.getUsername());
+        userEntity.setLoginId(signUpDto.getLoginId());
         userEntity.setPassword(signUpDto.getPassword()); // In real-world, this password should be encoded.
         userEntity.setName(signUpDto.getUsername());
         userRepository.save(userEntity);
