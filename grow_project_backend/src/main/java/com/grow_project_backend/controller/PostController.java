@@ -27,6 +27,8 @@ public class PostController {
     private UserLikedPostService userLikedPostService;
     @Autowired
     private SearchService searchService;
+    @Autowired
+    private CategoryService categoryService;
 
     // 게시글 작성
     @PostMapping
