@@ -17,6 +17,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/post")
+@CrossOrigin(originPatterns="http://localhost:3000", allowCredentials = "true")
 public class PostController {
 	
 	@Autowired

@@ -12,14 +12,15 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(originPatterns="http://localhost:3000",  allowCredentials = "true")
 public class AuthController {
 	
 	@Autowired
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> signUp(@RequestBody RequestRegisterDto requestRegisterDto) {
-        ResponseEntity<?> signUpResponse = userService.signUp(requestRegisterDto);
+    public ResponseEntity<?> signUp(@RequestBody RequestRegisterDto signUpDto) {
+        ResponseEntity<?> signUpResponse = userService.signUp(signUpDto);
         if (signUpResponse.getStatusCode().is2xxSuccessful()) {
             // 성공 시, 회원가입된 정보를 포함한 ResponseEntity 반환
             return signUpResponse;
