@@ -9,4 +9,6 @@ import com.grow_project_backend.entity.PostEntity;
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Long> {
     public List<PostEntity> findByTitleContaining(String keyword);
+
+    public List<PostEntity> findByCategoryContaining(String tab);
 }
